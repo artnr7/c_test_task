@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "parser.h"
+#include "parser/parser.h"
 
 bool getopt(int argc) {
   if (argc == 1 || argc >= 3) {
@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
     printf("File not found\n");
     return 1;
   }
-  parseline(f);
+  parse_line(f);
 
   fclose(f);
   return 0;

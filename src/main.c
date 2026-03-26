@@ -1,8 +1,7 @@
+#include <dlfcn.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-
-#include <dlfcn.h>
 
 #include "parser/parser.h"
 
@@ -23,6 +22,7 @@ int main(int argc, char** argv) {
   FILE* f = fopen(filename, "r");
   if (f == NULL) {
     printf("ERR: file not found\n");
+    fclose(f);
     return 11;
   }
 

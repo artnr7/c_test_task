@@ -1,7 +1,11 @@
-use
+use ../so/test.so
 call
-use call fwefw
+use 
+use ../so/dummy.so
+fwefwe call fwefw
 call fwefw few3
 use fefe
+fewfw
 call fwefw
 call fwef ew ewf ew 
+

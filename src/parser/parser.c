@@ -1,5 +1,6 @@
 #include "parser.h"
 
+#include <dlfcn.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,24 +29,21 @@ int parse_use_line(const char* line, const int lines_cnt) {
     return 1;
   }
 
-  char* dot = strchr(opt, '.');
-
-  if (dot == NULL) {
-    printf("ERR: wrong file format: corrupted:\n%d  %s\n\n", lines_cnt, opt);
+  // printf("opt = %s\n", opt);
+  void* dll = dlopen(opt, RTLD_LAZY);
+  if (!dll) {
+    fprintf(stderr, "%s\n", dlerror());
+    dlclose(dll);
     return 10;
   }
+  dlerror();
+  void (*example)(void);
 
-  if (!(*(dot + 1) == 's' && *(dot + 2) == 'o')) {
-    printf("ERR: wrong file format: corrupted:\n%d  %s\n\n", lines_cnt, opt);
-    return 11;
-  }
+  example = dlsym(dll, "example");
 
-  FILE* f = fopen(opt, "r");
-  if (f == NULL) {
-    printf("ERR: file not found: corrupted:\n%d  %s\n\n", lines_cnt, opt);
-    return 12;
-  }
+  example();
 
+  dlclose(dll);
   return 0;
 }
 
@@ -55,20 +53,24 @@ int parse_call_line(const char* line, const int lines_cnt) {
     return 1;
   }
 
-  
   return 0;
 }
+
+#define STR_BUF_SIZE 128
 
 int parse_line(FILE* f) {
   int err_code = 0;
   char* line = NULL;
-  size_t n = 100;
+  size_t n = 0;
 
   int lines_cnt = 1;
   char* entered_cmd = NULL;
-  char* line_wout_slashn = calloc(50, sizeof(char));
+  char* line_wout_slashn = malloc(STR_BUF_SIZE * sizeof(char));
 
   while (getline(&line, &n, f) > 0 && !err_code) {
+    memset(line_wout_slashn, '\0', STR_BUF_SIZE);
+    printf("lines_cnt = %d\n----------\n", lines_cnt);
+    // printf("line = %s\n", line);
     int len = strlen(line) - 1;
     if (line[len] != '\n') {
       ++len;
@@ -83,6 +85,8 @@ int parse_line(FILE* f) {
       err = parse_use_line(line, lines_cnt);
     } else if (strcmp("call", entered_cmd) == 0) {
       err = parse_call_line(line, lines_cnt);
+    } else {
+      printf("Syntax Error");
     }
 
     if (err >= 10) {

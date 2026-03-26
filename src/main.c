@@ -2,33 +2,30 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <dlfcn.h>
+
 #include "parser/parser.h"
 
-bool getopt(int argc) {
-  if (argc == 1 || argc >= 3) {
-    printf("You should run app with one parameter\n");
-    return false;
+int getopt(int argc) {
+  if (argc != 2) {
+    printf("ERR: you should run app with one parameter\n");
+    return 10;
   }
-  return true;
+  return 0;
 }
 
 int main(int argc, char** argv) {
-  (void)argv;
-
-  if (!getopt(argc)) {
-    return 1;
+  if (getopt(argc) != 0) {
+    return 10;
   }
-
-  char* filename = NULL;
-  if (argc >= 2) {
-    filename = argv[1];
-  }
+  char* filename = argv[1];
 
   FILE* f = fopen(filename, "r");
   if (f == NULL) {
-    printf("File not found\n");
-    return 1;
+    printf("ERR: file not found\n");
+    return 11;
   }
+
   parse_line(f);
 
   fclose(f);

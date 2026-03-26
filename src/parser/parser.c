@@ -3,23 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// void parse_use_line(const char* line, const int n, char* cmd) {
-//   if (strcmp("use", cmd) != 0) {
-//     return;
-//   }
-//
-//   char* opt = strtok(NULL, " ");
-//   if (opt == NULL) {
-//     print_use_line_warn("too few options", line, n);
-//     return;
-//   }
-//   char* leks = strtok(NULL, " ");
-//   if (leks != NULL) {
-//     print_use_line_warn("too much options", line, n);
-//     return;
-//   }
-// }
-
 void print_line_check_warn(const char* err, const char* line, const int n) {
   printf("WARN: %s: ignored:\n%d  %s\n\n", err, n, line);
 }
@@ -66,14 +49,18 @@ int parse_use_line(const char* line, const int lines_cnt) {
   return 0;
 }
 
-void parse_call_line(const char* line, const int lines_cnt) {
+int parse_call_line(const char* line, const int lines_cnt) {
   char* opt = NULL;
   if (entered_line_check(&opt, line, lines_cnt) != 0) {
-    return;
+    return 1;
   }
+
+  
+  return 0;
 }
 
-void parse_line(FILE* f) {
+int parse_line(FILE* f) {
+  int err_code = 0;
   char* line = NULL;
   size_t n = 100;
 
@@ -81,11 +68,7 @@ void parse_line(FILE* f) {
   char* entered_cmd = NULL;
   char* line_wout_slashn = calloc(50, sizeof(char));
 
-  while (1) {
-    if (getline(&line, &n, f) < 1) {
-      break;
-    }
-
+  while (getline(&line, &n, f) > 0 && !err_code) {
     int len = strlen(line) - 1;
     if (line[len] != '\n') {
       ++len;
@@ -93,12 +76,17 @@ void parse_line(FILE* f) {
 
     line_wout_slashn = strncpy(line_wout_slashn, line, len);
     entered_cmd = strtok(line_wout_slashn, " ");
+
     int err = 0;
     if (strcmp("use", entered_cmd) == 0) {
       // TODO: (artnr7) сделать обработку ошибок
       err = parse_use_line(line, lines_cnt);
     } else if (strcmp("call", entered_cmd) == 0) {
-      parse_call_line(line, lines_cnt);
+      err = parse_call_line(line, lines_cnt);
+    }
+
+    if (err >= 10) {
+      err_code = 10;
     }
 
     ++lines_cnt;
@@ -106,4 +94,5 @@ void parse_line(FILE* f) {
 
   free(line_wout_slashn);
   free(line);
+  return err_code;
 }

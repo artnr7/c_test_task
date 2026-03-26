@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 
-void parse_line(FILE* f);
-
-void parse_call_line(const char* line, const int lines_cnt);
+int parse_line(FILE* f);
 
 #endif

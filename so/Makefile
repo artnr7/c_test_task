@@ -6,3 +6,4 @@ endif
 all:
 	gcc -Wall -Werror -Wextra -c -fPIC test.c -o test.o
 	gcc -shared test.o -o test.so
+	rm -f *.o

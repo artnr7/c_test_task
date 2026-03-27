@@ -1,12 +1,13 @@
 use ../so/test.so
+fewfw
 call example
-call func
+call few ## feflkejwe ##
 use 
 use ../so/dummy.so
 fwefwe call fwefw
 call fwefw few3
 use fefe
-fewfw
+call func
 call fwefw
 call fwef ew ewf ew 
 

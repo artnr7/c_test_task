@@ -1,8 +1,6 @@
 #include <dlfcn.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "err.h"
 #include "files_work.h"
@@ -20,24 +18,22 @@ const char* tmp_filename = ".tmp";
 const char* buf_filename = ".buf";
 
 int main(int argc, char** argv) {
-  if (getopt(argc) != 0) {
+  if (getopt(argc) != SUCCESS) {
     return FATAL_RUNTIME;
   }
   char* src_filename = argv[1];
 
-  if (copy_files(src_filename, tmp_filename) != 0) {
+  if (copy_files(src_filename, tmp_filename) != SUCCESS) {
     print_err("FATAL", "files can't copied");
     return FATAL_RUNTIME;
   }
 
-  comment_destroyer();
-  // unite_lines();
+  strip_comments_and_join_continuation_lines();
 
-  // dbg_print_file(tmp_filename);
+  parse_line(MANUAL);
+  // manual_mode();
 
-  parse_line();
-
-  // remove(tmp_filename);
+  remove(tmp_filename);
 
   return SUCCESS;
 }

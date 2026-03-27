@@ -3,6 +3,11 @@
 
 #include <stdio.h>
 
-int parse_line();
+int parse_line(const int mode);
+
+enum {
+  MANUAL,
+  AUTO,
+};
 
 #endif

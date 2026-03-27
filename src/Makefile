@@ -4,7 +4,7 @@ ifeq ($(shell expr $(NPROC) \< 1), 1)
 endif
 
 ENTRY_POINT := main.c
-UTILS_FILE := parser.c
+UTILS_FILE := parser.c err.c files_work.c
 
 all:
 	@gcc -Wall -Werror -Wextra $(ENTRY_POINT) $(UTILS_FILE) -o interpretator

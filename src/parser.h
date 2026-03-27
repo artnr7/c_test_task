@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-int parse_line(FILE* f);
+int parse_line();
 
 #endif

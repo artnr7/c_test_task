@@ -7,6 +7,10 @@
 void print_err_with_line_num(const char* err_code, const char* err,
                              const int line_num, const char* line) {
   fprintf(stderr, "%s: %s: \n%d  %s\n\n", err_code, err, line_num, line);
+  // (void)err_code;
+  // (void)err;
+  // (void)line_num;
+  // (void)line;
 }
 
 int entered_line_check(char** opt, const char* line, const int line_num) {

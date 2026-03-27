@@ -1,8 +1,8 @@
 use ../so/test.so
 fewfw
 call example
-call few ## feflkejwe ##
-use 
+call few ## feflkejwe ##\
+use \
 use ../so/dummy.so
 fwefwe call fwefw
 call fwefw few3

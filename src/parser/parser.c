@@ -5,7 +5,7 @@
 #include <string.h>
 
 void print_line_check_warn(const char* err, const char* line, const int n) {
-  printf("WARN: %s: ignored:\n%d  %s\n\n", err, n, line);
+  fprintf(stderr, "WARN: %s: ignored:\n%d  %s\n\n", err, n, line);
 }
 
 int entered_line_check(char** opt, const char* line, const int lines_cnt) {
@@ -15,43 +15,55 @@ int entered_line_check(char** opt, const char* line, const int lines_cnt) {
     return 1;
   }
 
-  char* leks = strtok(NULL, " ");
-  if (leks != NULL) {  // здесь не должен быть
+  char* tok = strtok(NULL, " ");
+  if (tok != NULL) {  // здесь не должен быть
     print_line_check_warn("too much options", line, lines_cnt);
     return 2;
   }
   return 0;
 }
 
-int parse_use_line(const char* line, const int lines_cnt) {
+int parse_use_line(const char* line, const int lines_cnt, void** dll) {
   char* opt = NULL;
   if (entered_line_check(&opt, line, lines_cnt) != 0) {
     return 1;
+  }
+
+  if (*dll) {
+    dlclose(*dll);
   }
 
   // printf("opt = %s\n", opt);
-  void* dll = dlopen(opt, RTLD_LAZY);
-  if (!dll) {
-    fprintf(stderr, "%s\n", dlerror());
-    dlclose(dll);
+  dlerror();  // flush
+  *dll = dlopen(opt, RTLD_LAZY);
+  if (!(*dll)) {
+    fprintf(stderr, "ERR: %s\n", dlerror());
     return 10;
   }
-  dlerror();
-  void (*example)(void);
 
-  example = dlsym(dll, "example");
-
-  example();
-
-  dlclose(dll);
   return 0;
 }
 
-int parse_call_line(const char* line, const int lines_cnt) {
+int parse_call_line(const char* line, const int lines_cnt, void** dll) {
   char* opt = NULL;
   if (entered_line_check(&opt, line, lines_cnt) != 0) {
     return 1;
   }
+  if (!(*dll)) {
+    fprintf(stderr, "ERR: lib not loaded\n");
+    return 10;
+  }
+
+  dlerror();  // flush
+
+  void (*fn)(void);
+  fn = dlsym(*dll, opt);
+  const char* err = dlerror();
+  if (err) {
+    fprintf(stderr, "ERR: function not found: %s\n", err);
+    return 11;
+  }
+  fn();
 
   return 0;
 }
@@ -66,10 +78,11 @@ int parse_line(FILE* f) {
   int lines_cnt = 1;
   char* entered_cmd = NULL;
   char* line_wout_slashn = malloc(STR_BUF_SIZE * sizeof(char));
+  void* dll = NULL;
 
-  while (getline(&line, &n, f) > 0 && !err_code) {
+  while (getline(&line, &n, f) > 0 && err_code < 10) {
     memset(line_wout_slashn, '\0', STR_BUF_SIZE);
-    printf("lines_cnt = %d\n----------\n", lines_cnt);
+    // printf("lines_cnt = %d\n----------\n", lines_cnt);
     // printf("line = %s\n", line);
     int len = strlen(line) - 1;
     if (line[len] != '\n') {
@@ -79,24 +92,23 @@ int parse_line(FILE* f) {
     line_wout_slashn = strncpy(line_wout_slashn, line, len);
     entered_cmd = strtok(line_wout_slashn, " ");
 
-    int err = 0;
     if (strcmp("use", entered_cmd) == 0) {
-      // TODO: (artnr7) сделать обработку ошибок
-      err = parse_use_line(line, lines_cnt);
+      err_code = parse_use_line(line, lines_cnt, &dll);
     } else if (strcmp("call", entered_cmd) == 0) {
-      err = parse_call_line(line, lines_cnt);
+      err_code = parse_call_line(line, lines_cnt, &dll);
     } else {
       printf("Syntax Error");
     }
-
-    if (err >= 10) {
-      err_code = 10;
-    }
+    // printf("err = %d\n", err_code);
 
     ++lines_cnt;
   }
 
+  if (dll) {
+    dlclose(dll);
+  }
   free(line_wout_slashn);
   free(line);
+
   return err_code;
 }

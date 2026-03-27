@@ -1,5 +1,6 @@
 use ../so/test.so
-call
+call example
+call func
 use 
 use ../so/dummy.so
 fwefwe call fwefw

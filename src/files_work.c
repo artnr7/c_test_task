@@ -1,5 +1,6 @@
 #include "files_work.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -42,6 +43,7 @@ int strip_comments_and_join_continuation_lines(const char* tmp_filename,
 
   FILE* buf = fopen(buf_filename, "w");
   if (!buf) {
+    fclose(tmp_f);
     print_err("FATAL", "file can't be created");
     return FATAL_FILE_CANT_BE_CREATED;
   }

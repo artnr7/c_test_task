@@ -5,16 +5,17 @@
 #include <string.h>
 
 #include "err.h"
+#include "files_work.h"
 
 int entered_line_check(char** opt, const char* line, const int line_num) {
   *opt = strtok(NULL, " ");
-  if (*opt == NULL) {  // здесь должен быть
+  if (!(*opt)) {  // здесь должен быть
     print_err_with_line_num("WARN", "too few options: ignored", line_num, line);
     return WARN_TOO_FEW_ARGUMENTS;
   }
 
   char* tok = strtok(NULL, " ");
-  if (tok != NULL) {  // здесь не должен быть
+  if (tok) {  // здесь не должен быть
     print_err_with_line_num("WARN", "too much options: ignored", line_num,
                             line);
     return WARN_TOO_MANY_ARGUMENTS;
@@ -67,8 +68,6 @@ int parse_call_line(const char* line, const int line_num, void** dll) {
   return SUCCESS;
 }
 
-extern const char* tmp_filename;
-
 enum {
   STR_BUF_SIZE = 256,
 };
@@ -85,15 +84,21 @@ int process_line(const char* line, char* line_wout_slashn, int* line_num,
   }
   line_wout_slashn = strncpy(line_wout_slashn, line, len);
   char* entered_cmd = strtok(line_wout_slashn, " ");
-
-  // Исходя из того какая команда была введена свитчимся в нужную функцию
-  if (strcmp("use", entered_cmd) == 0) {
-    err = parse_use_line(line, *line_num, dll);
-  } else if (strcmp("call", entered_cmd) == 0) {
-    err = parse_call_line(line, *line_num, dll);
-  } else {
+  if (!entered_cmd) {
     print_err_with_line_num("WARN", "syntax error", *line_num, line);
     err = WARN_SYNTAX;
+  }
+
+  // Исходя из того какая команда была введена свитчимся в нужную функцию
+  if (err == SUCCESS) {
+    if (strcmp("use", entered_cmd) == 0) {
+      err = parse_use_line(line, *line_num, dll);
+    } else if (strcmp("call", entered_cmd) == 0) {
+      err = parse_call_line(line, *line_num, dll);
+    } else {
+      print_err_with_line_num("WARN", "syntax error", *line_num, line);
+      err = WARN_SYNTAX;
+    }
   }
 
   ++(*line_num);
@@ -120,8 +125,34 @@ int manual_mode() {
 
   return err;
 }
+int getopt(int argc) {
+  if (argc != 2) {
+    print_err("FATAL", "you should run app with one parameter");
+    return FATAL_RUNTIME;
+  }
+  return SUCCESS;
+}
 
-int auto_mode() {
+int auto_mode(const int argc, char** argv) {
+  if (getopt(argc) != SUCCESS) {
+    return FATAL_RUNTIME;
+  }
+  const char* src_filename = argv[1];
+
+  const char* tmp_filename = ".tmp";
+  const char* buf_filename = ".buf";
+
+  if (copy_files(src_filename, tmp_filename) != SUCCESS) {
+    print_err("FATAL", "files can't copied");
+    return FATAL_RUNTIME;
+  }
+
+  if (strip_comments_and_join_continuation_lines(tmp_filename, buf_filename) !=
+      SUCCESS) {
+    print_err("FATAL", "cant process source script file");
+    return FATAL_RUNTIME;
+  }
+
   FILE* tmp_f = fopen(tmp_filename, "r");
   if (!tmp_filename) {
     print_err("FATAL", "file not found");
@@ -147,21 +178,7 @@ int auto_mode() {
   if (line) {
     free(line);
   }
-
-  return err;
-}
-
-int parse_line(const int mode) {
-  int err = SUCCESS;
-
-  switch (mode) {
-    case MANUAL:
-      err = manual_mode();
-      break;
-    case AUTO:
-      err = auto_mode();
-      break;
-  }
+  remove(tmp_filename);
 
   return err;
 }

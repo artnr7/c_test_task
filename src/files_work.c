@@ -5,9 +5,6 @@
 
 #include "err.h"
 
-extern const char* tmp_filename;
-extern const char* buf_filename;
-
 int copy_files(const char* src_filename, const char* dst_filename) {
   FILE* src_f = fopen(src_filename, "r");
   if (!src_f) {
@@ -35,7 +32,8 @@ int copy_files(const char* src_filename, const char* dst_filename) {
   return SUCCESS;
 }
 
-int strip_comments_and_join_continuation_lines() {
+int strip_comments_and_join_continuation_lines(const char* tmp_filename,
+                                               const char* buf_filename) {
   FILE* tmp_f = fopen(tmp_filename, "r");
   if (!tmp_f) {
     print_err("FATAL", "file not found");

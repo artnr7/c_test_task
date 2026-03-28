@@ -3,9 +3,11 @@
 
 #include <stdio.h>
 
-int parse_line(const int mode);
+int manual_mode();
+int auto_mode(const int argc, char** argv);
 
 enum {
+  NONE = 0,
   MANUAL,
   AUTO,
 };

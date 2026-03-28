@@ -3,37 +3,71 @@
 #include <stdio.h>
 
 #include "err.h"
-#include "files_work.h"
 #include "parser.h"
 
-int getopt(int argc) {
-  if (argc != 2) {
-    print_err("FATAL", "you should run app with one parameter");
-    return FATAL_RUNTIME;
+int mode_input(int* mode) {
+  while (1) {
+    printf("Manual: 1\nAuto:   2 (requires 1 argument)\nMode: ");
+
+    int cnt = scanf("%d", mode);
+    char ch = getchar();
+    if (ch == 'q' && getchar() == '\n') {
+      return EXIT;
+    }
+    if (cnt == 1 && ch == '\n') {
+      printf("Let's go!\n");
+      if (*mode == 1 || *mode == 2) {
+        switch (*mode) {
+          case 1:
+            *mode = MANUAL;
+            break;
+          case 2:
+            *mode = AUTO;
+            break;
+        }
+        break;
+      } else {
+        print_err("WARN", "wrong mode input: use 1 or 2");
+      }
+    } else {
+      print_err("WARN", "wrong mode input");
+      char skip_ch = ' ';
+      while ((skip_ch = getchar()) != '\n' && skip_ch != EOF);
+    }
   }
+
   return SUCCESS;
 }
 
-const char* tmp_filename = ".tmp";
-const char* buf_filename = ".buf";
-
 int main(int argc, char** argv) {
-  if (getopt(argc) != SUCCESS) {
-    return FATAL_RUNTIME;
+#if DCHOOSE || DMANUAL
+  printf("\nexit 'q'\n\n");
+#endif
+
+  int mode = 0;
+  int err = SUCCESS;
+
+#ifdef DCHOOSE
+  err = mode_input(&mode);
+#endif
+  if (err == EXIT) {
+    return SUCCESS;
   }
-  char* src_filename = argv[1];
 
-  if (copy_files(src_filename, tmp_filename) != SUCCESS) {
-    print_err("FATAL", "files can't copied");
-    return FATAL_RUNTIME;
+#ifdef DMANUAL
+  mode = MANUAL;
+#elif DAUTO
+  mode = AUTO;
+#endif
+
+  switch (mode) {
+    case MANUAL:
+      err = manual_mode();
+      break;
+    case AUTO:
+      err = auto_mode(argc, argv);
+      break;
   }
 
-  strip_comments_and_join_continuation_lines();
-
-  parse_line(MANUAL);
-  // manual_mode();
-
-  remove(tmp_filename);
-
-  return SUCCESS;
+  return err;
 }

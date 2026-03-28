@@ -9,6 +9,8 @@ void print_err_with_line_num(const char* err_code, const char* err,
 
 enum {
   SUCCESS = 0,
+  EXIT = 1,
+
   // 100 - 199 WARN
   WARN = 100,
   WARN_RUNTIME,
@@ -19,6 +21,7 @@ enum {
   WARN_TOO_MANY_ARGUMENTS,
 
   WARN_SYNTAX,
+
   // DLL
   WARN_SO_NOT_LOADED,
   WARN_FUNCTION_NOT_FOUND,

@@ -6,18 +6,40 @@
 
 #include "err.h"
 
-int copy_files(const char* src_filename, const char* dst_filename) {
-  FILE* src_f = fopen(src_filename, "r");
-  if (!src_f) {
+int open_two_files_for_cp(FILE** src, const char* src_filename, FILE** dst,
+                          const char* dst_filename) {
+  *src = fopen(src_filename, "r");
+  if (!(*src)) {
     print_err("FATAL", "file not found");
     return FATAL_FILE_NOT_FOUND;
   }
 
-  FILE* dst_f = fopen(dst_filename, "w");
-  if (!dst_f) {
-    fclose(src_f);
+  *dst = fopen(dst_filename, "w");
+  if (!(*dst)) {
+    fclose(*src);
     print_err("FATAL", "file can't be created");
+    return FATAL_FILE_CANT_BE_CREATED;
+  }
+  return SUCCESS;
+}
+
+FILE* f = NULL;
+
+int open_file_for_reading(FILE** f, const char* filename) {
+  *f = fopen(filename, "r");
+  if (!(*f)) {
+    print_err("FATAL", "file not found");
     return FATAL_FILE_NOT_FOUND;
+  }
+  return SUCCESS;
+}
+
+int copy_files(const char* src_filename, const char* dst_filename) {
+  FILE* src_f = NULL;
+  FILE* dst_f = NULL;
+  if (open_two_files_for_cp(&src_f, src_filename, &dst_f, dst_filename) !=
+      SUCCESS) {
+    return FATAL_FILES_CANT_BE_COPIED;
   }
 
   char* line = NULL;
@@ -35,17 +57,11 @@ int copy_files(const char* src_filename, const char* dst_filename) {
 
 int strip_comments_and_join_continuation_lines(const char* tmp_filename,
                                                const char* buf_filename) {
-  FILE* tmp_f = fopen(tmp_filename, "r");
-  if (!tmp_f) {
-    print_err("FATAL", "file not found");
-    return FATAL_FILE_NOT_FOUND;
-  }
-
-  FILE* buf = fopen(buf_filename, "w");
-  if (!buf) {
-    fclose(tmp_f);
-    print_err("FATAL", "file can't be created");
-    return FATAL_FILE_CANT_BE_CREATED;
+  FILE* tmp_f = NULL;
+  FILE* buf = NULL;
+  if (open_two_files_for_cp(&tmp_f, tmp_filename, &buf, buf_filename) !=
+      SUCCESS) {
+    return FATAL_FILES_CANT_BE_COPIED;
   }
 
   char* line = NULL;
@@ -81,9 +97,8 @@ int strip_comments_and_join_continuation_lines(const char* tmp_filename,
 
 int dbg_print_file(const char* filename) {
   FILE* f = fopen(filename, "r");
-  if (!f) {
-    print_err("FATAL", "file not found");
-    return FATAL_FILE_NOT_FOUND;
+  if (open_file_for_reading(&f, filename) != SUCCESS) {
+    return FATAL_FILE_CANT_BE_OPENED;
   }
 
   char* line = NULL;

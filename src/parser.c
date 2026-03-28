@@ -56,8 +56,7 @@ int parse_call_line(const char* line, const int line_num, void** dll) {
 
   dlerror();  // flush
 
-  void (*fn)(void);
-  fn = dlsym(*dll, opt);
+  void (*fn)(void) = dlsym(*dll, opt);
   const char* err = dlerror();
   if (err) {
     print_err_with_line_num("FATAL", "function not found", line_num, line);
@@ -68,9 +67,7 @@ int parse_call_line(const char* line, const int line_num, void** dll) {
   return SUCCESS;
 }
 
-enum {
-  STR_BUF_SIZE = 256,
-};
+#define STR_BUF_SIZE 256
 
 int process_line(const char* line, char* line_wout_slashn, int* line_num,
                  void** dll) {
@@ -125,6 +122,7 @@ int manual_mode() {
 
   return err;
 }
+
 int getopt(int argc) {
   if (argc != 2) {
     print_err("FATAL", "you should run app with one parameter");
@@ -153,10 +151,9 @@ int auto_mode(const int argc, char** argv) {
     return FATAL_RUNTIME;
   }
 
-  FILE* tmp_f = fopen(tmp_filename, "r");
-  if (!tmp_filename) {
-    print_err("FATAL", "file not found");
-    return FATAL_FILE_NOT_FOUND;
+  FILE* tmp_f = NULL;
+  if (open_file_for_reading(&tmp_f, tmp_filename) != SUCCESS) {
+    return FATAL_FILE_CANT_BE_OPENED;
   }
   int err = SUCCESS;
 

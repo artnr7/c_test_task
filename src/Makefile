@@ -28,7 +28,7 @@ build: all
 
 clean:
 	@echo "cleaning"
-	@rm -f interpretator .tmp .buf test.out
+	@rm -f interpretator .tmp .buf test.out ../
 
 rebuild: clean build
 
@@ -36,8 +36,13 @@ r: rebuild run
 
 TEST_FILES := $(wildcard ../test/*.c)
 test:
-	$(COMPILER) $(TEST_FILES) -o test.out
-	./test.out
+	@echo "compiling.."
+	@$(COMPILER) -c -fPIC ../test/mock.c -o mock.o
+	@gcc -shared mock.o -o mock.so
+	@rm -f mock.o
+	@$(COMPILER) $(TEST_FILES) $(CORE_FILES) -o test.out -lcheck
+	@echo "running.."
+	@./test.out
 
 clangn:
 	clang-format -n *.c *.h

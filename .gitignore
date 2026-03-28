@@ -1,3 +1,5 @@
 interpretator
-tmp
+.tmp
+.buf
 *.o
+mock.so

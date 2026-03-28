@@ -22,7 +22,7 @@ auto_mode:
 	@$(COMPILER) -DDAUTO $(ENTRY_POINT) $(CORE_FILES) -o interpretator
 
 run:
-	@./interpretator ../scripts/test.sc
+	@./interpretator
 
 build: all
 

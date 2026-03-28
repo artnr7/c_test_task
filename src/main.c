@@ -6,8 +6,12 @@
 #include "parser.h"
 
 int mode_input(int* mode) {
-  while (1) {
-    printf("Manual: 1\nAuto:   2 (requires 1 argument)\nMode: ");
+  int exit = false;
+  while (!exit) {
+    printf("Choose mode\n");
+    printf("Manual: 1\n");
+    printf("Auto:   2 (requires 1 argument)\n");
+    printf("Mode: ");
 
     int cnt = scanf("%d", mode);
     char ch = getchar();
@@ -15,19 +19,18 @@ int mode_input(int* mode) {
       return EXIT;
     }
     if (cnt == 1 && ch == '\n') {
-      printf("Let's go!\n");
-      if (*mode == 1 || *mode == 2) {
-        switch (*mode) {
-          case 1:
-            *mode = MANUAL;
-            break;
-          case 2:
-            *mode = AUTO;
-            break;
-        }
-        break;
-      } else {
-        print_err("WARN", "wrong mode input: use 1 or 2");
+      switch (*mode) {
+        case 1:
+          *mode = MANUAL;
+          exit = true;
+          break;
+        case 2:
+          *mode = AUTO;
+          exit = true;
+          break;
+        default:
+          print_err("WARN", "wrong mode input: use 1 or 2");
+          break;
       }
     } else {
       print_err("WARN", "wrong mode input");
@@ -69,5 +72,6 @@ int main(int argc, char** argv) {
       break;
   }
 
+  // Не уверен какой код выхода возвращать при graceful shutdown
   return err;
 }

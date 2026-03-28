@@ -167,14 +167,15 @@ int auto_mode(const int argc, char** argv) {
   while (err < FATAL && getline(&line, &n, tmp_f) > 0) {
     err = process_line(line, line_wout_slashn, &line_num, &dll);
   }
-  fclose(tmp_f);
-
-  if (dll) {
-    dlclose(dll);
-  }
   if (line) {
     free(line);
   }
+  if (dll) {
+    dlclose(dll);
+  }
+
+  fclose(tmp_f);
+
   remove(tmp_filename);
 
   return err;

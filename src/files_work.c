@@ -23,8 +23,6 @@ int open_two_files_for_cp(FILE** src, const char* src_filename, FILE** dst,
   return SUCCESS;
 }
 
-FILE* f = NULL;
-
 int open_file_for_reading(FILE** f, const char* filename) {
   *f = fopen(filename, "r");
   if (!(*f)) {
@@ -47,7 +45,9 @@ int copy_files(const char* src_filename, const char* dst_filename) {
   while (getline(&line, &n, src_f) > 0) {
     fputs(line, dst_f);
   }
-  free(line);
+  if (line) {
+    free(line);
+  }
 
   fclose(src_f);
   fclose(dst_f);
@@ -96,7 +96,7 @@ int strip_comments_and_join_continuation_lines(const char* tmp_filename,
 }
 
 int dbg_print_file(const char* filename) {
-  FILE* f = fopen(filename, "r");
+  FILE* f = NULL;
   if (open_file_for_reading(&f, filename) != SUCCESS) {
     return FATAL_FILE_CANT_BE_OPENED;
   }

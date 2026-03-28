@@ -72,6 +72,5 @@ int main(int argc, char** argv) {
       break;
   }
 
-  // Не уверен какой код выхода возвращать при graceful shutdown
   return err;
 }

@@ -1,3 +1,5 @@
 use call fwefw
 call fwefw few3
-use fefe
+use \
+../so/car.so
+call car_desc

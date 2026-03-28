@@ -1,3 +1,3 @@
-#include <stdio.h>
+#include "utils.h"
 
-void example(void) { printf("dlloutput: Hello, world!\n"); }
+void example(void) { dlloutput("Hello, WoW!"); }

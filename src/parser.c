@@ -70,7 +70,7 @@ int parse_call_line(const char* line, const int line_num, void** dll) {
 #define STR_BUF_SIZE 256
 
 int process_line(const char* line, char* line_wout_slashn, int* line_num,
-                 void** dll) {
+                 void** dll, const int mode) {
   int err = SUCCESS;
 
   memset(line_wout_slashn, '\0', STR_BUF_SIZE);  // обнуляем строку
@@ -92,6 +92,8 @@ int process_line(const char* line, char* line_wout_slashn, int* line_num,
       err = parse_use_line(line, *line_num, dll);
     } else if (strcmp("call", entered_cmd) == 0) {
       err = parse_call_line(line, *line_num, dll);
+    } else if (mode == MANUAL && strcmp("q", entered_cmd) == 0) {
+      err = EXIT;
     } else {
       print_err_with_line_num("WARN", "syntax error", *line_num, line);
       err = WARN_SYNTAX;
@@ -112,8 +114,8 @@ int manual_mode() {
 
   void* dll = NULL;
 
-  while (err < FATAL && fgets(line, sizeof(line), stdin)) {
-    err = process_line(line, line_wout_slashn, &line_num, &dll);
+  while (err < FATAL && err != EXIT && fgets(line, sizeof(line), stdin)) {
+    err = process_line(line, line_wout_slashn, &line_num, &dll, MANUAL);
   }
 
   if (dll) {
@@ -165,7 +167,7 @@ int auto_mode(const int argc, char** argv) {
 
   size_t n = 0;
   while (err < FATAL && getline(&line, &n, tmp_f) > 0) {
-    err = process_line(line, line_wout_slashn, &line_num, &dll);
+    err = process_line(line, line_wout_slashn, &line_num, &dll, AUTO);
   }
   if (line) {
     free(line);

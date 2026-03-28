@@ -28,11 +28,16 @@ build: all
 
 clean:
 	@echo "cleaning"
-	@rm -rf interpretator .tmp .buf
+	@rm -f interpretator .tmp .buf test.out
 
 rebuild: clean build
 
 r: rebuild run
+
+TEST_FILES := $(wildcard ../test/*.c)
+test:
+	$(COMPILER) $(TEST_FILES) -o test.out
+	./test.out
 
 clangn:
 	clang-format -n *.c *.h

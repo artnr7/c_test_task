@@ -67,8 +67,6 @@ int parse_call_line(const char* line, const int line_num, void** dll) {
   return SUCCESS;
 }
 
-#define STR_BUF_SIZE 256
-
 int process_line(const char* line, char* line_wout_slashn, int* line_num,
                  void** dll, const int mode) {
   int err = SUCCESS;
@@ -153,10 +151,12 @@ int auto_mode(const int argc, char** argv) {
     return FATAL_RUNTIME;
   }
 
-  FILE* tmp_f = NULL;
-  if (open_file_for_reading(&tmp_f, tmp_filename) != SUCCESS) {
-    return FATAL_FILE_CANT_BE_OPENED;
+  FILE* tmp_f = fopen(tmp_filename, "r");
+  if (!tmp_f) {
+    print_err("FATAL", "file not found");
+    return FATAL_FILE_NOT_FOUND;
   }
+
   int err = SUCCESS;
 
   char* line = NULL;

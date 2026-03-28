@@ -28,7 +28,7 @@ build: all
 
 clean:
 	@echo "cleaning"
-	@rm -f interpretator .tmp .buf test.out ../
+	@rm -f interpretator .tmp .buf test.out mock.so
 
 rebuild: clean build
 
@@ -43,6 +43,8 @@ test:
 	@$(COMPILER) $(TEST_FILES) $(CORE_FILES) -o test.out -lcheck
 	@echo "running.."
 	@./test.out
+
+t: test
 
 clangn:
 	clang-format -n *.c *.h

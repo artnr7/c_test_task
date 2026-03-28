@@ -23,15 +23,6 @@ int open_two_files_for_cp(FILE** src, const char* src_filename, FILE** dst,
   return SUCCESS;
 }
 
-int open_file_for_reading(FILE** f, const char* filename) {
-  *f = fopen(filename, "r");
-  if (!(*f)) {
-    print_err("FATAL", "file not found");
-    return FATAL_FILE_NOT_FOUND;
-  }
-  return SUCCESS;
-}
-
 int copy_files(const char* src_filename, const char* dst_filename) {
   FILE* src_f = NULL;
   FILE* dst_f = NULL;
@@ -91,24 +82,6 @@ int strip_comments_and_join_continuation_lines(const char* tmp_filename,
 
   remove(tmp_filename);
   rename(buf_filename, tmp_filename);
-
-  return SUCCESS;
-}
-
-int dbg_print_file(const char* filename) {
-  FILE* f = NULL;
-  if (open_file_for_reading(&f, filename) != SUCCESS) {
-    return FATAL_FILE_CANT_BE_OPENED;
-  }
-
-  char* line = NULL;
-  size_t n = 0;
-  while (getline(&line, &n, f) > 0) {
-    printf("%s", line);
-  }
-  free(line);
-
-  fclose(f);
 
   return SUCCESS;
 }

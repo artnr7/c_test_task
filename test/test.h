@@ -2,6 +2,7 @@
 #define TEST_H_
 #include <check.h>
 
-Suite* parser(void);
+Suite* get_parser_test_suite(void);
+Suite* get_files_work_test_suite(void);
 
 #endif  // !DEBUG

@@ -3,7 +3,7 @@ ifeq ($(shell expr $(NPROC) \< 1), 1)
   NPROC := 1
 endif
 
-.PHONY: all build rebuild test clean r t
+.PHONY: all build rebuild test clean r t so
 
 COMPILER := gcc -Wall -Werror -Wextra
 
@@ -23,26 +23,27 @@ TEST_CORE_H_FS := $(wildcard $(TESTD)/*.h)
 TEST_EXEF := $(TESTD)/test.out
 
 # SO
-SO_OBJS := 
-all: $(OBJS) test math car clean
+SO_CORE_FS := $(addprefix $(SOD)/, car.c mathematic.c example.c utils.c) 
+SO_CORE_H_FS := $(addprefix $(SOD)/, utils.h) 
+SO_OBJS := $(SO_CORE_FS:.c=.o) 
+SO_SO := $(addprefix $(SOD)/, example.so mathematic.so car.so)
 
-test: test.o utils.o
-	gcc -shared test.o utils.o -o test.so
-	clean
+so: $(SO_OBJS) example math car clean
 
-math: mathematic.o utils.o
-	gcc -shared mathematic.o utils.o -o mathematic.so
-	clean
+example: $(SOD)/example.o $(SOD)/utils.o
+	gcc -shared $(SOD)/example.o $(SOD)/utils.o -o $(SOD)/example.so
+
+math: $(SOD)/mathematic.o $(SOD)/utils.o
+	gcc -shared $(SOD)/mathematic.o $(SOD)/utils.o -o $(SOD)/mathematic.so
 	
-car: car.o utils.o
-	gcc -shared car.o utils.o -o car.so
-	clean
+car: $(SOD)/car.o $(SOD)/utils.o
+	gcc -shared $(SOD)/car.o $(SOD)/utils.o -o $(SOD)/car.so
 
 %.o: %.c
 	$(COMPILER) -c -fPIC $< -o $@ 
 
-clean:
-	rm -f *.o
+clean_so:
+	rm -f $(SO_OBJS) 
 
 # MISC
 TMP_FS := $(EXEF) $(addprefix $(TESTD)/, mock.so) $(TEST_EXEF)

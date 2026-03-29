@@ -1,4 +1,4 @@
-use so/test.so
+use so/example.so
 fewfw
 call example
 call few ## feflkejwe ##\

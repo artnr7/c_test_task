@@ -82,16 +82,16 @@ START_TEST(manual_mode_test) {
       {"manual_mode_test_txt/success_1.txt", SUCCESS},
   };
 
-  // fclose(stdin);
+  fclose(stdin);
   for (size_t i = 0; i < sizeof(tcases) / sizeof(tcases[0]); ++i) {
-    // FILE* test_stdin =
-    //     freopen(", "r", stdin);
-    // ck_assert_ptr_nonnull(test_stdin);
-    // stdin = test_stdin;
-    //
-    // int err = manual_mode();
-    //
-    // ck_assert_int_eq(err, tcases[i].exp_err);
+    FILE* test_stdin =
+        freopen("test/manual_mode_test_txt/success_1.txt", "r", stdin);
+    ck_assert_ptr_nonnull(test_stdin);
+    stdin = test_stdin;
+
+    int err = manual_mode();
+
+    ck_assert_int_eq(err, tcases[i].exp_err);
   }
   stdin = freopen("/dev/tty", "r", stdin);
   ck_assert_ptr_nonnull(stdin);

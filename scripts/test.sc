@@ -1,9 +1,9 @@
-use ../so/test.so
+use so/test.so
 fewfw
 call example
 call few ## feflkejwe ##\
 use \
-use ../so/dummy.so
+use so/dummy.so
 fwefwe call \## fwefw
 call fwefw few3
 use fefe

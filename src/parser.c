@@ -137,8 +137,8 @@ int auto_mode(const int argc, char** argv) {
   }
   const char* src_filename = argv[1];
 
-  const char* tmp_filename = ".tmp";
-  const char* buf_filename = ".buf";
+  const char* tmp_filename = ".tmpd/.tmp";
+  const char* buf_filename = ".tmpd/.buf";
 
   if (copy_files(src_filename, tmp_filename) != SUCCESS) {
     print_err("FATAL", "files can't copied");
@@ -178,7 +178,7 @@ int auto_mode(const int argc, char** argv) {
 
   fclose(tmp_f);
 
-  remove(tmp_filename);
+  // remove(tmp_filename);
 
   return err;
 }

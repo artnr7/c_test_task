@@ -2,6 +2,7 @@
 
 #include <check.h>
 #include <dlfcn.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "../src/err.h"
@@ -71,6 +72,32 @@ START_TEST(process_line_test) {
   }
 }
 
+START_TEST(manual_mode_test) {
+  typedef struct {
+    const char* filename;
+    int exp_err;
+  } tcase;
+
+  tcase tcases[] = {
+      {"manual_mode_test_txt/success_1.txt", SUCCESS},
+  };
+
+  // fclose(stdin);
+  for (size_t i = 0; i < sizeof(tcases) / sizeof(tcases[0]); ++i) {
+    // FILE* test_stdin =
+    //     freopen(", "r", stdin);
+    // ck_assert_ptr_nonnull(test_stdin);
+    // stdin = test_stdin;
+    //
+    // int err = manual_mode();
+    //
+    // ck_assert_int_eq(err, tcases[i].exp_err);
+  }
+  stdin = freopen("/dev/tty", "r", stdin);
+  ck_assert_ptr_nonnull(stdin);
+}
+END_TEST
+
 START_TEST(getopt_test) {
   for (int i = -2; i < 3; ++i) {
     if (i == 2) continue;
@@ -82,6 +109,9 @@ START_TEST(getopt_test) {
   ck_assert_int_eq(err, SUCCESS);
 }
 
+START_TEST(auto_mode_test) {}
+END_TEST
+
 Suite* get_parser_test_suite(void) {
   Suite* s = suite_create("parser tests");
   TCase* tc_parser_core = tcase_create("parser core");
@@ -90,7 +120,9 @@ Suite* get_parser_test_suite(void) {
   tcase_add_test(tc_parser_core, parse_use_line_test);
   tcase_add_test(tc_parser_core, parse_call_line_test);
   tcase_add_test(tc_parser_core, process_line_test);
+  tcase_add_test(tc_parser_core, manual_mode_test);
   tcase_add_test(tc_parser_core, getopt_test);
+  tcase_add_test(tc_parser_core, auto_mode_test);
 
   //
   suite_add_tcase(s, tc_parser_core);

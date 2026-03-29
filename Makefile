@@ -47,7 +47,7 @@ clean_so:
 	rm -f $(SO_OBJS) 
 
 # MISC
-TMP_FS := $(EXEF) $(addprefix $(TESTD)/, mock.so) $(TEST_EXEF)
+TMP_FS := $(addprefix $(TESTD)/, mock.so)
 
 ALL_CH_FS := $(ENTRY_POINT) $(CORE_FS) $(CORE_H_FS) $(TEST_CORE_FS) $(TEST_CORE_H_FS)
 
@@ -81,6 +81,10 @@ clean:
 	@rm -f $(TMP_FS)
 	@rm -rf $(TMPD) report_lcov
 
+clean_exe:
+	@echo "cleaning exe.."
+	@rm -f $(EXEF) $(TEST_EXEF)
+
 rebuild: clean build
 
 r: rebuild run
@@ -103,13 +107,13 @@ test_valgrind: compile_mock_so
 	@echo "running.."
 	@valgrind ./$(TEST_EXEF)
 
-gcov_report:
+gcov_report: clean compile_mock_so
 	mkdir -p $(TMPD)
-	$(COMPILER) $(TEST_CORE_FS) $(CORE_FS) --coverage -o $(TMPD)/gcov_test_lcov -lcheck
+	$(COMPILER) $(TEST_CORE_FS) $(CORE_FS) --coverage -lcheck -o $(TMPD)/gcov_test_lcov
 	$(TMPD)/gcov_test_lcov
 	lcov --capture --directory $(TMPD) --output-file $(TMPD)/coverage.info --ignore-errors gcov,mismatch,inconsistent --rc geninfo_unexecuted_blocks=1 --quiet 2>/dev/null
-	lcov --remove coverage.info 'test' --output-file coverage.filtered.info --ignore-errors inconsistent --quiet 2>/dev/null
-	genhtml $(TMPD)/coverage.filtered.info --output-directory report_lcov
+	lcov --remove $(TMPD)/coverage.info 'test/*' --output-file $(TMPD)/coverage.filtered.info --ignore-errors inconsistent --quiet 2>/dev/null
+	genhtml $(TMPD)/coverage.filtered.info --output-directory report_lcov -c gcov.css --quiet
 
 t: test
 

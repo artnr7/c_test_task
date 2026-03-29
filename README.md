@@ -10,11 +10,11 @@ call "function_name"
 Установить **все** необходимые пакеты
 arch
 ```
-pacman -S make check valgrind clang-format
+pacman -S make check valgrind clang-format gcov lcov
 ```
 debian(ubuntu)-like
 ```
-apt install make check valgrind clang-format
+apt install make check valgrind clang-format gcov lcov
 ```
 
 Для сборки установите **make**
@@ -39,6 +39,12 @@ apt install valgrind
 ```
 pacman -S clang-format
 apt install clang-format
+```
+
+Для установления процента покрытия тестами установите **gcov** и **lcov**
+```
+pacman -S gcov lcov
+apt install gcov lcov
 ```
 
 ## Сборка
@@ -92,4 +98,12 @@ call car_desc
 make auto_mode # auto mode
 ./src/interpretator scripts/test.sc
 
+```
+## Тесты
+```
+make test
+```
+## Покрытие тестами
+```
+make gcov_report
 ```

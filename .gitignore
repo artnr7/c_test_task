@@ -1,8 +1,10 @@
 interpretator
-.tmp
+.tmpd
 *.o
 mock.so
 report_lcov
 *.gcda
 *.gcno
 gcov_test_lcov
+mock.txt
+test.out

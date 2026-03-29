@@ -1,0 +1,2 @@
+use so/example.so
+call notfound

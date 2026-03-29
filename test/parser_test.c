@@ -8,9 +8,6 @@
 #include "../src/err.h"
 #include "test.h"
 
-#define STR_TEST_BUF_SIZE 128
-#define TCASES_SIZE(tcases) (sizeof(tcases) / sizeof(tcases[0]))
-
 START_TEST(entered_line_check_test) {
   struct {
     const char* line;
@@ -21,7 +18,7 @@ START_TEST(entered_line_check_test) {
       {"use fefew.so", SUCCESS},
   };
 
-  for (int i = 0; i < TCASES_SIZE(tcases); ++i) {
+  for (size_t i = 0; i < TCASES_SIZE(tcases); ++i) {
     char line_cp[STR_TEST_BUF_SIZE];
     strcpy(line_cp, tcases[i].line);
 
@@ -44,7 +41,7 @@ START_TEST(parse_use_line_test) {
       {"use test/mock.so", SUCCESS},
   };
 
-  for (int i = 0; i < TCASES_SIZE(tcases); ++i) {
+  for (size_t i = 0; i < TCASES_SIZE(tcases); ++i) {
     char line_cp[STR_TEST_BUF_SIZE];
     strcpy(line_cp, tcases[i].line);
 
@@ -66,7 +63,7 @@ START_TEST(parse_call_line_test) {
       {"call ex", SUCCESS},
   };
 
-  for (int i = 0; i < TCASES_SIZE(tcases); ++i) {
+  for (size_t i = 0; i < TCASES_SIZE(tcases); ++i) {
     void* dll = NULL;
     if (i == 3) {
       dll = dlopen("./test/mock.so", RTLD_LAZY);
@@ -94,7 +91,7 @@ START_TEST(process_line_test) {
                 {"fewf", WARN_SYNTAX}};
 
   int line_num = 1;
-  for (int i = 0; i < TCASES_SIZE(tcases); ++i) {
+  for (size_t i = 0; i < TCASES_SIZE(tcases); ++i) {
     char line_wout_slashn[STR_BUF_SIZE] = {'\0'};
     void* dll = NULL;
     int err =
@@ -104,17 +101,16 @@ START_TEST(process_line_test) {
 }
 
 START_TEST(manual_mode_test) {
-#define DDDW "test/manual_mode_test_txt"
   struct {
     const char* filename;
     int exp_err;
   } tcases[] = {
-      {DDDW "/success_1.txt", SUCCESS},
-      {DDDW "/exit_1.txt", EXIT},
+      {TEST_TXT "/success_1.txt", SUCCESS},
+      {TEST_TXT "/exit_1.txt", EXIT},
   };
 
   fclose(stdin);
-  for (int i = 0; i < TCASES_SIZE(tcases); ++i) {
+  for (size_t i = 0; i < TCASES_SIZE(tcases); ++i) {
     FILE* test_stdin = freopen(tcases[i].filename, "r", stdin);
     ck_assert_ptr_nonnull(test_stdin);
     stdin = test_stdin;
@@ -152,7 +148,7 @@ START_TEST(auto_mode_test) {
       {2, {EXE, SCRD "/test.sc"}, FATAL_FUNCTION_NOT_FOUND},
   };
 
-  for (int i = 0; i < TCASES_SIZE(tcases); ++i) {
+  for (size_t i = 0; i < TCASES_SIZE(tcases); ++i) {
     int err = auto_mode(tcases[i].argc, tcases[i].argv);
     ck_assert_int_eq(err, tcases[i].exp_err);
   }

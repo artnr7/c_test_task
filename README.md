@@ -59,7 +59,7 @@ make manual_mode
 ```
 Сборка исполняемого файла только с автоматическим режимом
 ```
-make manual_mode
+make auto_mode
 ```
 
 ## Запуск

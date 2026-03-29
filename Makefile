@@ -5,8 +5,8 @@ endif
 
 .PHONY: all build rebuild test clean r t so
 
-# COMPILER := gcc -Wall -Werror -Wextra
-COMPILER := gcc
+COMPILER := gcc -Wall -Werror -Wextra
+# COMPILER := gcc
 
 SRCD := src
 TESTD := test

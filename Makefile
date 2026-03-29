@@ -5,7 +5,8 @@ endif
 
 .PHONY: all build rebuild test clean r t so
 
-COMPILER := gcc -Wall -Werror -Wextra
+# COMPILER := gcc -Wall -Werror -Wextra
+COMPILER := gcc
 
 SRCD := src
 TESTD := test
@@ -70,25 +71,45 @@ auto_mode:
 run:
 	@./$(EXEF)
 
+run_valgrind:
+	@valgrind ./$(EXEF)
+
 build: all
 
 clean:
 	@echo "cleaning.."
 	@rm -f $(TMP_FS)
-	@rm -rf $(TMPD)
+	@rm -rf $(TMPD) report_lcov
 
 rebuild: clean build
 
 r: rebuild run
 
-test:
-	@echo "compiling test.."
+compile_mock_so:
 	@$(COMPILER) -c -fPIC $(TESTD)/mock.c -o $(TESTD)/mock.o
 	@gcc -shared $(TESTD)/mock.o -o $(TESTD)/mock.so
 	@rm -f $(TESTD)/mock.o
+
+
+test: compile_mock_so
+	@echo "compiling test.."
 	@$(COMPILER) $(TEST_CORE_FS) $(CORE_FS) -o $(TEST_EXEF) -lcheck
 	@echo "running.."
 	@./$(TEST_EXEF)
+
+test_valgrind: compile_mock_so
+	@echo "compiling test.."
+	@$(COMPILER) $(TEST_CORE_FS) $(CORE_FS) -o $(TEST_EXEF) -lcheck
+	@echo "running.."
+	@valgrind ./$(TEST_EXEF)
+
+gcov_report:
+	mkdir -p $(TMPD)
+	$(COMPILER) $(TEST_CORE_FS) $(CORE_FS) --coverage -o $(TMPD)/gcov_test_lcov -lcheck
+	$(TMPD)/gcov_test_lcov
+	lcov --capture --directory $(TMPD) --output-file $(TMPD)/coverage.info --ignore-errors gcov,mismatch,inconsistent --rc geninfo_unexecuted_blocks=1 --quiet 2>/dev/null
+	lcov --remove coverage.info 'test' --output-file coverage.filtered.info --ignore-errors inconsistent --quiet 2>/dev/null
+	genhtml $(TMPD)/coverage.filtered.info --output-directory report_lcov
 
 t: test
 

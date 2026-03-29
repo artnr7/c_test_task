@@ -131,7 +131,7 @@ int getopt(int argc) {
   return SUCCESS;
 }
 
-int auto_mode(const int argc, char** argv) {
+int auto_mode(const int argc, char* argv[]) {
   if (getopt(argc) != SUCCESS) {
     return FATAL_RUNTIME;
   }
@@ -167,6 +167,7 @@ int auto_mode(const int argc, char** argv) {
 
   size_t n = 0;
   while (err < FATAL && getline(&line, &n, tmp_f) > 0) {
+    if (line[0] == '\n') continue;
     err = process_line(line, line_wout_slashn, &line_num, &dll, AUTO);
   }
   if (line) {

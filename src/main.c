@@ -42,7 +42,7 @@ int mode_input(int* mode) {
   return SUCCESS;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
 #if DCHOOSE || DMANUAL
   printf("\nexit 'q'\n\n");
 #endif

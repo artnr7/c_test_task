@@ -10,7 +10,7 @@ int process_line(const char* line, char* line_wout_slashn, int* line_num,
                  void** dll, const int mode);
 int manual_mode();
 int getopt(int argc);
-int auto_mode(const int argc, char** argv);
+int auto_mode(const int argc, char* argv[]);
 
 enum {
   NONE = 0,

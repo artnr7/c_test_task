@@ -35,9 +35,9 @@ START_TEST(copy_files_test) {
     const char* dst_filename;
     const int exp_err;
   } tcases[] = {
-      {TEST_TXT "/success_1.txt", TESTD "mock.txt", SUCCESS},
-      {TEST_TXT "/exit_1.txt", TESTD "mock.txt", SUCCESS},
-      {TEST_TXT "/notfound.txt", TESTD "mock.txt", FATAL_FILES_CANT_BE_COPIED},
+      {TEST_TXT "/success_1.txt", TESTD "/mock.txt", SUCCESS},
+      {TEST_TXT "/exit_1.txt", TESTD "/mock.txt", SUCCESS},
+      {TEST_TXT "/notfound.txt", TESTD "/mock.txt", FATAL_FILES_CANT_BE_COPIED},
   };
 
   for (size_t i = 0; i < TCASES_SIZE(tcases); ++i) {
@@ -52,7 +52,7 @@ START_TEST(strip_comments_and_join_continuation_lines_test) {
     const char* tmp_filename;
     const char* buf_filename;
     const int exp_err;
-  } tcases[] = {{TESTD ".tmpmock", TESTD ".bufmock", SUCCESS}};
+  } tcases[] = {{TESTD "/.tmpmock", TESTD "/.bufmock", SUCCESS}};
 
   for (size_t i = 0; i < TCASES_SIZE(tcases); ++i) {
     int err = strip_comments_and_join_continuation_lines(

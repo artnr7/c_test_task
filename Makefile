@@ -29,7 +29,7 @@ SO_CORE_H_FS := $(addprefix $(SOD)/, utils.h)
 SO_OBJS := $(SO_CORE_FS:.c=.o) 
 SO_SO := $(addprefix $(SOD)/, example.so mathematic.so car.so)
 
-so: $(SO_OBJS) example math car clean
+so: $(SO_OBJS) example math car clean_so_o
 
 example: $(SOD)/example.o $(SOD)/utils.o
 	gcc -shared $(SOD)/example.o $(SOD)/utils.o -o $(SOD)/example.so
@@ -43,8 +43,13 @@ car: $(SOD)/car.o $(SOD)/utils.o
 %.o: %.c
 	$(COMPILER) -c -fPIC $< -o $@ 
 
-clean_so:
+clean_so: clean_so_o clean_so_so
+
+clean_so_o:
 	rm -f $(SO_OBJS) 
+
+clean_so_so:
+	rm -f $(SO_SO) 
 
 # MISC
 TMP_FS := $(addprefix $(TESTD)/, mock.so)
@@ -95,19 +100,21 @@ compile_mock_so:
 	@rm -f $(TESTD)/mock.o
 
 
-test: compile_mock_so
+test: so compile_mock_so
 	@echo "compiling test.."
+	@mkdir -p $(TMPD)
 	@$(COMPILER) $(TEST_CORE_FS) $(CORE_FS) -o $(TEST_EXEF) -lcheck
 	@echo "running.."
 	@./$(TEST_EXEF)
 
-test_valgrind: compile_mock_so
+test_valgrind: so compile_mock_so
 	@echo "compiling test.."
+	@mkdir -p $(TMPD)
 	@$(COMPILER) $(TEST_CORE_FS) $(CORE_FS) -o $(TEST_EXEF) -lcheck
 	@echo "running.."
 	@valgrind ./$(TEST_EXEF)
 
-gcov_report: clean compile_mock_so
+gcov_report: clean so compile_mock_so
 	mkdir -p $(TMPD)
 	$(COMPILER) $(TEST_CORE_FS) $(CORE_FS) --coverage -lcheck -o $(TMPD)/gcov_test_lcov
 	$(TMPD)/gcov_test_lcov

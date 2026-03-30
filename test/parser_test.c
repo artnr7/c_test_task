@@ -137,7 +137,7 @@ START_TEST(getopt_test) {
 }
 
 START_TEST(auto_mode_test) {
-#define EXE "src/interpretator"
+#define EXE "test/interpretatormock"
 #define SCRD "scripts"
   struct {
     const int argc;

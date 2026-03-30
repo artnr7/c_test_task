@@ -8,3 +8,8 @@ report_lcov
 gcov_test_lcov
 mock.txt
 test.out
+
+# so
+car.so
+mathematic.so
+example.so

@@ -179,7 +179,7 @@ int auto_mode(const int argc, char* argv[]) {
 
   fclose(tmp_f);
 
-  // remove(tmp_filename);
+  remove(tmp_filename);
 
   return err;
 }

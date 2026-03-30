@@ -52,7 +52,7 @@ START_TEST(strip_comments_and_join_continuation_lines_test) {
     const char* tmp_filename;
     const char* buf_filename;
     const int exp_err;
-  } tcases[] = {};
+  } tcases[] = {{TESTD ".tmpmock", TESTD ".bufmock", SUCCESS}};
 
   for (size_t i = 0; i < TCASES_SIZE(tcases); ++i) {
     int err = strip_comments_and_join_continuation_lines(

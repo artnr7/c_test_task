@@ -4,6 +4,7 @@ ifeq ($(shell expr $(NPROC) \< 1), 1)
 endif
 
 .PHONY: all build rebuild test clean r t so
+.DEFAULT_GOAL := all
 
 COMPILER := gcc -Wall -Werror -Wextra
 
